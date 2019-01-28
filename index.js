@@ -9,16 +9,18 @@ app.get('/:name/:samur',(req ,res) => {
 
 // get new token and show it for user 
 app.get('/login', (req ,res) => { 
+    
     user = {
         name : 'roman'  
     }
     jwt.sign({user},'secret' ,{expiresIn : '30s'},(err,token) => { 
-        res.json({token})
+        console.log('token was set :)')
+        res.cookie('token', token, { expires: new Date(Date.now() + 900000), httpOnly: true });
     })
 });
 
 app.get('/', verifyToken, (req ,res) => { 
-
+console.log('login to / ')
     jwt.verify(req.token , 'secret' , (err ,authData) => {
 if (err){
     res.sendStatus(503)
@@ -29,10 +31,11 @@ else{
     });
 });
 
-
+// must use the authorization Bearer TOKEN 
 // this is handler for url  - takes the header of authorization -> split the token :)
 // and put the token on the -> req.token
 function verifyToken(req ,res ,next){
+
     const bearerHeader = req.headers['authorization'];
     if (typeof bearerHeader !== 'undefined'){
 
