@@ -7,6 +7,8 @@ app.get('/:name/:samur',(req ,res) => {
   });
 
 
+  var t= ""
+
 // get new token and show it for user 
 app.get('/login', (req ,res) => { 
     
@@ -16,12 +18,16 @@ app.get('/login', (req ,res) => {
     jwt.sign({user},'secret' ,{expiresIn : '30s'},(err,token) => { 
         console.log('token was set :)')
         res.cookie('token', token, { expires: new Date(Date.now() + 900000), httpOnly: true });
+        t = token
+        res.json({user})
     })
 });
+ 
+  //app.get('/', verifyToken, (req ,res) => { 
+    app.get('/',  (req ,res) => { 
 
-app.get('/', verifyToken, (req ,res) => { 
-console.log('login to / ')
-    jwt.verify(req.token , 'secret' , (err ,authData) => {
+    // using the global varible t with the token in the /login
+    jwt.verify(t , 'secret' , (err ,authData) => {
 if (err){
     res.sendStatus(503)
 }
